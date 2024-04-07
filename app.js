@@ -9,7 +9,7 @@ const server = http.createServer(app);
 const io = socketIO(server);
 const port = process.env.PORT || 3000;
 
-// OpenAI API configuration
+
 const openai = new OpenAI({
     apiKey: process.env.OPEN_API_KEY
 });
@@ -17,7 +17,7 @@ const openai = new OpenAI({
 app.use(express.static("public"));
 
 io.on("connection", (socket) => {
-  console.log("Yeni kullanıcı bağlandı");
+  console.log("New user connected");
 
   
   const conversationHistory = [];
@@ -25,7 +25,7 @@ io.on("connection", (socket) => {
   socket.on("sendMessage", async (message, callback) => {
     try {
       
-      conversationHistory.push({ role: "kullanıcı", content: message });
+      conversationHistory.push({ role: "user", content: message });
 
       const completion = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
@@ -34,21 +34,22 @@ io.on("connection", (socket) => {
 
       const response = completion.choices[0].message.content;
 
-      conversationHistory.push({ role: "asistan", content: response });
+      
+      conversationHistory.push({ role: "assistant", content: response });
 
       socket.emit("message", response);
       callback();
     } catch (error) {
-      console.error("bir hata oluştu");
-      callback("Hata: Chatbota bağlanıamadı");
+      console.error(error);
+      callback("Error: Unable to connect to the chatbot");
     }
   });
 
   socket.on("disconnect", () => {
-    console.log("Kullanıcı bağlantısı koptu");
+    console.log("User disconnected");
   });
 });
 
 server.listen(port, () => {
-  console.log(`Server bağlantı noktasında çalışıyor ${port}`);
+  console.log(`Server is running on port ${port}`);
 });
