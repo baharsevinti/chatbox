@@ -11,13 +11,13 @@ const port = process.env.PORT || 3000;
 
 // OpenAI API configuration
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_SECRET_KEY
+    apiKey: process.env.OPEN_API_KEY
 });
 
 app.use(express.static("public"));
 
 io.on("connection", (socket) => {
-  console.log("New user connected");
+  console.log("Yeni kullanıcı bağlandı");
 
   
   const conversationHistory = [];
@@ -45,10 +45,10 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("User disconnected");
+    console.log("Kullanıcı bağlantısı koptu");
   });
 });
 
 server.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Server bağlantı noktasında çalışıyor ${port}`);
 });
